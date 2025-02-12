@@ -320,14 +320,8 @@ def main():
                     Must Have Technical Skills:
                     - [List each required technical skill]
 
-                    Must Have Soft Skills:
-                    - [List each required soft skill]
-
                     Good to Have Technical Skills:
                     - [List each preferred technical skill]
-
-                    Good to Have Soft Skills:
-                    - [List each preferred soft skill]
 
                     Brief Explanation:
                     [Explain why these skills are categorized as must-have vs good-to-have]"""
