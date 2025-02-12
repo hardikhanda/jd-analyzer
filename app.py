@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 from anthropic import Anthropic
+from dotenv import load_dotenv
 
 # Page configuration
 st.set_page_config(
@@ -10,12 +11,43 @@ st.set_page_config(
 )
 
 def get_api_key():
-    """Get API key from Streamlit secrets"""
-    try:
-        return st.secrets["ANTHROPIC_API_KEY"]
-    except KeyError:
-        st.error("ANTHROPIC_API_KEY not found in secrets.")
-        st.stop()
+    """
+    Get API key from either .env file (local) or Streamlit secrets (cloud)
+    """
+    # First try loading from .env file (local development)
+    load_dotenv()
+    api_key = os.getenv('ANTHROPIC_API_KEY')
+    
+    # If not found in .env, try Streamlit secrets (cloud deployment)
+    if not api_key:
+        try:
+            api_key = st.secrets.general.ANTHROPIC_API_KEY
+        except:
+            try:
+                api_key = st.secrets["ANTHROPIC_API_KEY"]
+            except:
+                st.error("""
+                API key not found. Please either:
+                1. Add ANTHROPIC_API_KEY to your .env file (local development)
+                2. Add it to Streamlit secrets (cloud deployment)
+                """)
+                st.stop()
+    
+    return api_key
+
+def extract_text_from_response(response):
+    """Extract text from the response object"""
+    if isinstance(response, list):
+        for item in response:
+            if hasattr(item, 'text'):
+                return item.text
+            str_item = str(item)
+            if "text='" in str_item:
+                start = str_item.find("text='") + 6
+                end = str_item.find("', type='text'")
+                if start > 5 and end > start:
+                    return str_item[start:end]
+    return str(response)
 
 def analyze_with_claude(jd_text):
     """Analyze JD using Claude"""
@@ -58,13 +90,21 @@ def analyze_with_claude(jd_text):
             }]
         )
         
-        return response.content
+        if hasattr(response, 'content'):
+            return response.content
+        return extract_text_from_response(response)
+            
     except Exception as e:
         st.error(f"API Error: {str(e)}")
         return None
 
 def parse_skills(text):
     """Parse the response text to extract skills"""
+    if isinstance(text, list):
+        text = extract_text_from_response(text)
+    
+    text = str(text)
+    
     must_have_technical = []
     must_have_soft = []
     good_have_technical = []
@@ -109,6 +149,10 @@ def parse_skills(text):
 
 def main():
     st.title("JD Skills Analyzer 📝")
+    
+    # Display environment info
+    env_type = "Local" if os.getenv('ANTHROPIC_API_KEY') else "Cloud"
+    st.sidebar.info(f"Running in {env_type} environment")
     
     st.markdown("""
     ### Analyze job descriptions and extract required skills
