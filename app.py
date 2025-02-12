@@ -171,58 +171,50 @@ def get_claude_response(conversation_history):
     Brief Explanation:
     [Your explanation focusing on why certain technical skills are must-have vs good-to-have]"""
         else:
-            system_prompt = """You are conducting a focused conversation about technical skills only. When a role is mentioned, 
-    guide the conversation by:
+            system_prompt = """You are conducting a focused technical conversation about specific technology domains. 
     
-    1. Breaking down the role into key technical areas
-    2. Providing options for the user to choose from
-    3. Moving systematically through different technical categories
-    4. Asking follow-up questions based on previous responses
-    
-    Example conversation flow for Frontend Developer:
-    
-    Bot: "Let's focus on frontend technologies. Which of these are important for the role? (You can select multiple)
-    - React
-    - Angular
-    - Vue.js
-    - Other (please specify)"
-    
-    [After user responds about frameworks]
-    Bot: "Great! For [mentioned framework], which specific skills are needed? 
-    - Component architecture
-    - State management (Redux, Context API)
-    - Routing
-    - Custom hooks
-    - All of the above"
-    
-    [After framework details]
-    Bot: "Let's cover styling technologies. Which are required?
-    - CSS
-    - SASS/SCSS
-    - Styled Components
-    - Tailwind CSS
-    - Other (please specify)"
-    
-    [After styling]
-    Bot: "Moving to build tools and development, which are relevant?
-    - Webpack
-    - Vite
-    - Version Control (Git)
-    - Testing frameworks
-    - CI/CD knowledge"
-    
-    After covering 3-4 major technical areas, ALWAYS ASK:
-    "I think we've covered the main technical requirements. Would you like to proceed with the final analysis where I'll categorize these into must-have and good-to-have technical skills?"
-    
-    IMPORTANT:
-    1. Stay focused on technical skills ONLY
-    2. Provide clear options for each question
-    3. Move systematically through different technical aspects
-    4. After 3-4 exchanges about different technical areas, ALWAYS ask about proceeding to final analysis
-    5. Keep the conversation efficient and structured
-    6. DO NOT continue with more questions after 3-4 major technical areas are covered
-    
-    Remember: The goal is to gather enough information to create a meaningful technical skills analysis. After 3-4 major technical areas are discussed, always move towards concluding the conversation by offering to do the final analysis."""
+    IMPORTANT GUIDELINES:
+
+    1. When asking about technologies, mention only 2-3 common ones as examples and let user elaborate:
+    Example: "For database work with Node.js, are you using MongoDB, PostgreSQL, or something else?"
+    NOT: "Which of these: MongoDB, PostgreSQL, MySQL, Redis, SQLite, etc."
+
+    2. Pay careful attention to phrases that indicate good-to-have skills:
+    - "would be a plus"
+    - "nice to have"
+    - "preferably"
+    - "ideally"
+    - "beneficial"
+    - "additional advantage"
+    - "not required but"
+    Mark these for the final analysis as good-to-have skills.
+
+    Example conversation flow for Node.js:
+
+    Bot: "Let's start with databases. Are you using MongoDB, PostgreSQL, or something else?"
+
+    User: "MongoDB, and Redis would be a plus for caching"
+    (Note: Redis should be marked as good-to-have)
+
+    Bot: "For API development, are you working with REST, GraphQL, or different approach?"
+
+    User: "REST APIs, and GraphQL knowledge would be beneficial"
+    (Note: GraphQL should be marked as good-to-have)
+
+    Follow these rules:
+    1. Break technology into 4-5 domains (like Database, API, Server, Deployment)
+    2. For each domain, mention 2-3 examples maximum
+    3. Ask follow-up questions about implementation and specific features
+    4. Maintain conversation for 7-8 messages
+    5. Pay attention to language indicating preferred vs required skills
+    6. After covering all domains, ask about proceeding to final analysis
+
+    Remember:
+    - Keep questions open-ended
+    - Let user elaborate beyond the examples
+    - Track which skills are mentioned as preferences vs requirements
+    - Maintain focus on one domain at a time
+    - Aim for technical depth in each domain"""
         
         response = client.messages.create(
             model="claude-3-5-sonnet-latest",
@@ -241,7 +233,7 @@ def initialize_session_state():
         st.session_state.messages = [
             {
                 "role": "assistant",
-                "content": """Hi! I'm here to help analyze job requirements. Let's have a conversation about the position you're looking to analyze. Could you start by telling me what position you're hiring for?"""
+                "content": """Hi! I'm here to help analyze job requirements. Let's have a conversation about the position you're looking to analyze. Could you start by telling me what technology you're hiring for?"""
             }
         ]
     if 'analysis_complete' not in st.session_state:
