@@ -1,6 +1,10 @@
 import streamlit as st
 import os
-
+st.set_page_config(
+    page_title="JD Skills Analyzer",
+    page_icon="📝",
+    layout="wide"
+)
 from anthropic import Anthropic
 
 def get_api_key():
