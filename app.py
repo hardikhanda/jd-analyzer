@@ -311,7 +311,7 @@ def main():
             
             # Check if we should proceed with final analysis
             last_message = st.session_state.messages[-2]["content"].lower()
-            if ("analysis report" in last_message or "proceed with" in last_message) and \
+            if ("analysis report" in last_message or "proceed with" in last_message or "final analysis" in last_message or "break down" in last_message) and \
                any(word in user_input.lower() for word in ["yes", "sure", "okay", "go ahead", "ok"]):
                 # Generate final analysis
                 final_prompt = {
